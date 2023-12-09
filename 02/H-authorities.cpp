@@ -10,12 +10,12 @@ struct Authority
 {
     long long a;
     long long b;
-    unsigned id;
+    unsigned long id;
     bool in_band;
 };
 
 
-void process_pos_influencers(vector<Authority>& pos_influence, long long& respect, unsigned& size) {
+void process_pos_influencers(vector<Authority>& pos_influence, long long& respect, unsigned long& size) {
     sort(pos_influence.begin(), pos_influence.end(), [](const Authority& fst, const Authority& snd){ return fst.a < snd.a; });
     for (Authority& auth : pos_influence) {
         if (respect >= auth.a) {
@@ -29,9 +29,10 @@ void process_pos_influencers(vector<Authority>& pos_influence, long long& respec
 }
 
 
-void process_neg_influencers(vector<Authority>& neg_influence, long long& respect, unsigned& size) {
+void process_neg_influencers(vector<Authority>& neg_influence, long long& respect, unsigned long& size) {
     sort(neg_influence.begin(), neg_influence.end(), [](const Authority& fst, const Authority& snd){ return snd.a + snd.b < fst.a + fst.b; });
-    priority_queue<Authority*> pq;
+    auto compare_b = [](Authority* fst, Authority* snd){ return fst->b > snd->b; };
+    priority_queue<Authority*, vector<Authority*>, decltype(compare_b)> pq;
     for (Authority& auth : neg_influence) {
         if (respect >= auth.a) {
             respect += auth.b;
@@ -53,8 +54,8 @@ void process_neg_influencers(vector<Authority>& neg_influence, long long& respec
 
 
 int main() {
-    unsigned n;
-    unsigned size = 0;
+    unsigned long n;
+    unsigned long size = 0;
     long long respect;
     cin >> n >> respect;
     vector<Authority> pos_influence;
@@ -76,12 +77,12 @@ int main() {
     process_neg_influencers(neg_influence, respect, size);
 
     cout << size << endl;
-    for (auto auth : pos_influence) {
+    for (Authority auth : pos_influence) {
         if (auth.in_band) {
             cout << auth.id << ' ';
         }
     }
-    for (auto auth : neg_influence) {
+    for (Authority auth : neg_influence) {
         if (auth.in_band) {
             cout << auth.id << ' ';
         }
